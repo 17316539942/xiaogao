@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>管理员登录</title>
+  <style></style>
+</head>
+<!-- http://127.0.0.1:8080/login.html -->
+<body>
+<h1>管理员登录</h1>
+<hr>
+<label>用户名：</label>
+<input type="text" placeholder="用户名" id="aname"> <br>
+<label>密&#x3000;码：</label>
+<input type="password" placeholder="密码" id="apwd"> <br>
+<button id="btn">登录</button>
+<!-- 空标签,作用是登录成功后，改标签内出现一个可跳转的a连接。后期学了bom就可以直接跳转 -->
+<div id="jump"></div>
+<script>
+  //1.获取所有需要的元素（id）
+  var aname = document.getElementById('aname');
+  var apwd = document.getElementById('apwd');
+  var btn = document.getElementById('btn');
+  var jump = document.getElementById('jump');
+  //2.写ajax函数
+  function ajax(a,b){
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function(){
+      if(xhr.readyState == 4){
+        if(xhr.status>=200&&xhr.status<300){
+          var result = JSON.parse(xhr.responseText);
+          console.log(result);
+          //result.code == 1 登录正确
+          if(result.code==1){
+            alert('登录成功');
+            //登录成功后jump里面加入一个可以跳转到列表的超链接
+            jump.innerHTML = '<a href="./list.html">跳转至用户列表</a>'
+          }else {
+            alert('用户名或密码错误');
+          }
+        }else {
+          console.log('数据返回错误');
+        }
+      }
+    }
+    xhr.open('POST','/admin/login',true);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.send(`aname=${a}&apwd=${b}`);
+  }
+  //3.点击按钮接收用户输入内容并传递给ajax函数
+  btn.onclick = function(){
+    //先接收参数
+    var anameval = aname.value.trim();
+    var apwdval = apwd.value.trim();
+    //判断是否有空值
+    if(anameval!=''&&apwdval!=''){
+      //在给ajax传参
+      ajax(anameval,apwdval);
+    }else {
+      alert('用户名和密码不能为空');
+    }
+  }
+</script>
+</body>
+</html>

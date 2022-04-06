@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<body>
+		<table border="1px" cellspacing="0" style="border-collapse:collapse" >
+			<thead>
+				<tr>
+				<th colspan="5">我是管理员</th>
+				</tr>
+				<tr>
+				<td>编号</td>
+				<td>名字</td>
+				<td>手机号</td>
+				<td>是否会员</td>
+				<td>删除</td>
+				</tr>
+			</thead>                                                                                     
+			<tbody id="msg">
+				
+			</tbody>
+		</table>
+		<script type="text/javascript">
+			function fn(){
+				var xhr=new XMLHttpRequest;
+				var url="http://127.0.0.1:3000/admin/list";
+				xhr.open("get",url,true);
+				xhr.send();
+				xhr.onreadystatechange=function(){
+				  if(xhr.readyState==4&&xhr.status==200){
+					  var obj=JSON.parse(xhr.responseText);
+						  var ns=obj.data;
+						  var str="";
+						  for(var i=0;i<ns.length;i++){
+							  var s=ns[i];
+							  str+=`
+							  <tr>
+							  <td>${s.u_id}</td>
+							  <td>${s.u_names}</td>
+							  <td>${s.u_phone}</td>
+							  <td>${s.u_member==1?"会员":"不是"}</td>
+								<td><input type="button" onclick="del(${s.u_id})" value="删除"></td>
+							  </tr>
+							  `;
+							
+							}
+						  msg.innerHTML=str;
+							
+				  }
+				}
+			}
+				fn();
+			function del(id){
+				if(confirm("是否确定删除该记录？")){
+				  let xhr = new XMLHttpRequest;
+				  let url = "http://127.0.0.1:3000/admin/del/"+id;
+					
+				  xhr.open("delete",url,true);
+				  xhr.send();
+					xhr.onreadystatechange = function(){
+						if(xhr.status==200&&xhr.readyState==4){
+							var obj = JSON.parse(xhr.responseText);
+							if(obj.code){
+								alert("成功");
+									fn();
+							}else{
+								alert("删除失败。请联系管理员")
+							}
+						}
+					}
+				}
+
+				
+			}
+			
+			
+				
+		</script>
+	</body>
+</html>

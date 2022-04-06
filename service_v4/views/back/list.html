@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>管理员查看所有用户列表</title>
+  <style></style>
+</head>
+<body>
+  <h1>用户列表</h1>
+  <hr>
+  <a href="./query.html">查询单个用户入口</a>
+  <hr>
+  <table align="center" border="1px">
+    <thead>
+      <tr>
+        <th style="width: 70px;">序号</th>
+        <th style="width: 120px;">用户名字</th>
+        <th style="width: 150px;">用户手机号</th>
+        <th style="width: 70px;">是否会员</th>
+        <th style="width: 80px;">删除</th>
+      </tr>
+    </thead>
+    <tbody id="userlist"></tbody>
+  </table>
+  <script>
+    //1.获取元素
+    var userlist = document.getElementById('userlist');
+    //2.写ajax函数，并且不需要交互调用，页面刷新是直接调用
+    function ajax(){
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function(){
+        if(xhr.readyState == 4){
+          if(xhr.status >=200&&xhr.status<300){
+            var result = JSON.parse(xhr.responseText);
+            console.log(result);
+            //调用显示用的函数showlist
+            showlist(result.data);
+          }else {
+            console.log('数据返回错误');
+          }
+        }
+      }
+      xhr.open('GET','/admin/list',true);
+      xhr.send();
+    }
+    //3.调用ajax函数
+    ajax();
+    //4.创建用于遍历数据显示的showlist函数
+    function showlist(arr){
+      //空字符
+      var str = '';
+      //遍历
+      for(var i=0;i<arr.length;i++){
+        str += `<tr>
+            <td>${arr[i].u_id}</td>
+            <td>${arr[i].u_names}</td>
+            <td>${arr[i].u_phone}</td>
+            <td>${arr[i].u_member}</td>
+            <td><button onclick=del(${arr[i].u_id})>删除</button></td>
+          </tr>`
+      }
+      // 插入到userlist标签中
+      userlist.innerHTML = str;
+    }
+    //5.删除用户数据的函数(要触发ajax)
+    function del(id){
+	  //小技巧:删除之前要提问
+	  var rs = confirm("是否删除指定数据?");
+	  if(!rs){
+	     return;
+	  }
+      // alert(id);
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function(){
+        if(xhr.readyState == 4){
+          if(xhr.status>=200&&xhr.status<300){
+            var result = JSON.parse(xhr.responseText);
+            console.log(result);
+            //result.code==1 相当于删除成功了
+            if(result.code==1){
+              alert(result.msg);
+              //重新去后台查询所有内容，并刷新页面
+              ajax();
+            }
+          }else {
+            console.log('返回数据错误');
+          }
+        }
+      }
+      // delete方法和get方法基本一致，传参方式相同
+      xhr.open('DELETE',`/admin/del/${id}`,true);
+      xhr.send();
+    }
+  </script>
+</body>
+</html>

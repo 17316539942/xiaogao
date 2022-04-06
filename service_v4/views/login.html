@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<body>
+		<h3>后台管理员登录</h3>
+		<form>
+			<span>管理员名称<span>
+			<input id="input" type="text" placeholder="请输入用户名"><br><br>
+			<span>管理员密码</span>
+			<input id="pwd1" type="password" placeholder="请输入密码"><br><br>
+			<span id="msg2" style="color:red;"></span><br>
+			<input type="button" id="btn" value="登录">
+		</form>
+		<script>
+		//获取登录按钮 绑定点击事件
+		  btn.onclick=function(){
+			  var reg=/^[a-zA-Z0-9]{3,11}$/;
+			  if(!reg.test(input.value)){
+				  msg2.innerHTML="管理员名称格式错误";
+				  return;
+			  }
+			  if(!reg.test(pwd1.value)){
+				  msg2.innerHTML="管理员密码格式有误";
+				  return;
+			  }
+			  //创建正则表达式验证用户名和密码
+			  //创建对象
+			  var xhr=new XMLHttpRequest();
+			  //打开网络连接
+			  var url="http://127.0.0.1:3000/admin/login";
+			  xhr.open("POST",url,true);
+			  //修改请求主体数据格式
+			  xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+			  //发送数据
+			  xhr.send(`aname=${input.value}&apwd=${pwd1.value}`);
+			  //绑定事件
+			  xhr.onreadystatechange=function(){
+				  //判断
+				  if(xhr.readyState==4&&xhr.status==200){
+					  //获取服务器返回数据
+					  //将json数据转为js对象
+					  var obj=JSON.parse(xhr.responseText);
+					  //console.log(obj);
+					  //判断返回值为1
+					  if(obj.code){
+						  //转网页
+						  location.href="用户查询.html";
+					  }else{
+						  msg2.innerHTML=obj.msg;
+					  }
+				  }
+			  }
+		  } 
+		</script>
+	</body>
+</html>

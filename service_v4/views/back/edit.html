@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>用户修改个人信息</title>
+  <style></style>
+</head>
+<body>
+<!-- 修改个人信息必须有一个负责查询的字段，选择了不能重复的手机号作为，查询字段 -->
+<h1>修改个人信息</h1>
+<hr>
+<label>原手机号：</label>
+<input type="text" placeholder="注册时所有手机号" id="oldphone">
+<hr>
+<h4>以下为修改信息，不需修改的按照原内容填写</h4>
+<label>*新名字：</label>
+<input type="text" placeholder="请输入新名字" id="uname"> <br>
+<label>*新手机号：</label>
+<input type="text" placeholder="请输入新手机号" id="uphone"> <br>
+<label>*更新会员状态：</label>
+<input type="text" placeholder="填写1/0" id="umember"> <br>
+<button id="btn">提交修改</button>
+<script>
+  //1.获取元素
+  var oldphone = document.getElementById('oldphone');
+  var uname = document.getElementById('uname');
+  var uphone = document.getElementById('uphone');
+  var umember = document.getElementById('umember');
+  var btn = document.getElementById('btn');
+  //2.ajax函数
+  function ajax(a,b,c,d){
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function(){
+      if(xhr.readyState == 4){
+        if(xhr.status>=200&&xhr.status<300){
+          var result = JSON.parse(xhr.responseText);
+          alert(result.msg);
+        }else {
+          console.log('返回数据错误');
+        }
+      }
+    }
+    xhr.open('PUT','/user/edit',true);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.send(`uname=${a}&uphone=${b}&umember=${c}&oldphone=${d}`);
+  }
+  //3.点击按钮传递参数
+  btn.onclick = function(){
+    var unameval = uname.value.trim();
+    var uphoneval = uphone.value.trim();
+    var umemberval = umember.value.trim();
+    var oldphoneval = oldphone.value.trim();
+    ajax(unameval,uphoneval,umemberval,oldphoneval);
+  }
+</script>
+</body>
+</html>
